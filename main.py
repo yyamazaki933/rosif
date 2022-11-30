@@ -9,7 +9,7 @@ import subprocess
 
 import util.plotter as plotter
 import util.ros2bag2csv as bag2csv
-
+import monitor.monitor as monitor
 import re
 import time
 
@@ -270,81 +270,43 @@ def open_monitor():
 # topic monitor
 #################
 
-class FreqMonitor(QtCore.QThread):
-
-    currentFreqChanged = QtCore.pyqtSignal(int)
-
-    def __init__(self, source, topic):
-        super().__init__(None)
-        
-        self.__is_canceled = False
-        self.freq = 0
-        self.msg_source = source
-        self.topic = topic
-
-    def run(self):
-        cmd = 'source ' + self.msg_source
-        cmd += ' && '
-        cmd += 'exec ros2 topic hz ' + self.topic + ' --window 100'
-
-        self.cmd_proc = subprocess.Popen(
-            cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, text=True)
-        
-        while not self.__is_canceled:
-            line = self.cmd_proc.stdout.readline()
-        
-            if line == None:
-                return
-            
-            if "average rate:" in line:
-                self.freq = int(re.split('[:.]', line)[1])
-                self.currentFreqChanged.emit(self.freq)
-            
-            time.sleep(0.1)
-    
-    def stop(self):
-        self.cmd_proc.kill()
-        
-        while True:
-            if self.cmd_proc.poll() != None:
-                self.cmd_proc = None
-                break
-        self.__is_canceled = True
-
-        self.quit()
-        self.wait()
-
-        print("[INFO] Called FreqMonitor.stop()")
-
-
 def start_freq_monitor():
     global freq_monitor
+    global echo_monitor
 
     if freq_monitor != None:
         if freq_monitor.isRunning() or not freq_monitor.isFinished():
             freq_monitor.stop()
             freq_monitor = None
 
+    if echo_monitor != None:
+        if echo_monitor.isRunning() or not echo_monitor.isFinished():
+            echo_monitor.stop()
+            echo_monitor = None
+
     ui_monitor.prog_hz.setRange(0, 1)
     ui_monitor.prog_hz.setValue(0)
+    ui_monitor.pte_echo.clear()
+
     topic = ui_monitor.cb_topic.currentText()
     msg_source = ui_monitor.le_bash.text()
 
     if topic == '':
         return
 
-    freq_monitor = FreqMonitor(msg_source, topic)
-    freq_monitor.currentFreqChanged.connect(monitor_callback)
-
+    freq_monitor = monitor.FreqMonitor(msg_source, topic)
+    freq_monitor.currentFreqChanged.connect(freq_callback)
     freq_monitor.start()
 
-    print("[INFO] start_freq_monitor()")
+    echo_monitor = monitor.EchoMonitor(msg_source, topic)
+    echo_monitor.msgUpdated.connect(echo_callback)
+    echo_monitor.start()
 
 
-def monitor_callback(freq):
+def freq_callback(freq):
     global freq_monitor
 
-    print("[INFO] Called monitor_callback() freq =", freq)
+    print("[INFO] Called freq_callback() freq =", freq)
 
     if freq > ui_monitor.prog_hz.maximum():
         ui_monitor.prog_hz.setRange(0, freq)
@@ -357,26 +319,20 @@ def monitor_callback(freq):
         ui_monitor.prog_hz.setValue(0)
 
 
-def echo_once():
+def echo_callback(msg):
+    global echo_monitor
+
+    print("[INFO] Called echo_callback()")
+
     ui_monitor.pte_echo.clear()
-
-    topic = ui_monitor.cb_topic.currentText()
-    msg_source = ui_monitor.le_bash.text()
-
-    if topic == '':
-        return
-
-    cmd = 'source ' + msg_source
-    cmd += ' && '
-    cmd += 'ros2 topic echo ' + topic + ' --once'
-    stdout = exec_cmd(cmd)
-
-    ui_monitor.pte_echo.setPlainText(stdout)
+    ui_monitor.pte_echo.setPlainText(msg)
 
     row0 = ui_monitor.pte_echo.document().findBlockByLineNumber(0)
     ui_monitor.pte_echo.setTextCursor(QTextCursor(row0))
 
-    print("[INFO] echo_once()")
+    if not ui_monitor.isVisible():
+        echo_monitor.stop()
+        echo_monitor = None
 
 
 #################
@@ -582,6 +538,7 @@ if __name__ == '__main__':
     topics = []
     player_proc = None
     freq_monitor = None
+    echo_monitor = None
     timer_tick = 1000
     timer = QtCore.QTimer()
     timer.timeout.connect(timer_callback)
