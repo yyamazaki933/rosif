@@ -1,3 +1,5 @@
-# ros2_analyzer
+# rosif
+
+Graphical User Interface for ROS2
 
 2022.11 yudai.yamazaki
