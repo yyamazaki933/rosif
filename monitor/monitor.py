@@ -3,6 +3,7 @@
 import time
 import re
 import subprocess
+
 from PyQt5 import QtCore
 
 
@@ -74,8 +75,12 @@ class EchoMonitor(QtCore.QThread):
         cmd += 'ros2 topic echo ' + self.topic + ' --once'
 
         while not self.__is_canceled:
-            resp = subprocess.run(cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
-            self.msgUpdated.emit(resp.stdout)
+            try:
+                resp = subprocess.run(cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
+                self.msgUpdated.emit(resp.stdout)
+            except subprocess.TimeoutExpired:
+                self.msgUpdated.emit('[WARN] topic echo : timeout!')
+
             time.sleep(1)
 
     def stop(self):

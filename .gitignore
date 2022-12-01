@@ -2,3 +2,4 @@
 *.kml
 *.csv
 .vscode
+*.log
