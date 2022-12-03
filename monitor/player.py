@@ -42,10 +42,13 @@ class RosbagPlayer(QtCore.QThread):
         cmd = 'source ' + self.msg_source
         cmd += ' && '
         cmd += 'exec ros2 bag play ' + self.rosbag_dir
+        cmd += ' --clock 200'
         cmd += ' --rate ' + str(self.rate)
         if self.offset != 0:
             cmd += ' --start-offset ' + str(self.offset)
-
+        
+        print(cmd)
+        
         self.cmd_proc = subprocess.Popen(
             cmd, shell=True, executable='/bin/bash')
         self.is_running = True

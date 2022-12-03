@@ -25,6 +25,7 @@ class FreqMonitor(QtCore.QThread):
         cmd = 'source ' + self.msg_source
         cmd += ' && '
         cmd += 'exec ros2 topic hz ' + self.topic + ' --window 100'
+        print(cmd)
 
         self.cmd_proc = subprocess.Popen(
             cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, text=True)

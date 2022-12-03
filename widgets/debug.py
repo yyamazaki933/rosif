@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 
 from PyQt5 import uic
@@ -9,16 +8,18 @@ from PyQt5 import uic
 class DebugWindow():
 
     def __init__(self, ui_file):
-        self.home_dir = os.getenv('HOME')
         self.ros_distro = 'humble'
-        self.monitor = None
+        self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
+        self.topic_monitor = None
+        self.node_monitor = None
 
         self.ui = uic.loadUi(ui_file)
         self.ui.pb_update.clicked.connect(self.pb_update)
         self.ui.pb_update_2.clicked.connect(self.pb_update)
         self.ui.cb_node.currentTextChanged.connect(self.cb_node)
         self.ui.cb_topic.currentTextChanged.connect(self.cb_topic)
-        self.ui.pb_monitor.clicked.connect(self.open_monitor)
+        self.ui.pb_topicmon.clicked.connect(self.open_topic_monitor)
+        self.ui.pb_nodemon.clicked.connect(self.open_node_monitor)
 
         self.ui.lw_subtopic.itemDoubleClicked.connect(self.topic_selected)
         self.ui.lw_pubtopic.itemDoubleClicked.connect(self.topic_selected)
@@ -34,9 +35,21 @@ class DebugWindow():
 
     def set_rosdistro(self, ros_distro):
         self.ros_distro = ros_distro
-    
-    def set_monitor(self, monitor):
-        self.monitor = monitor
+
+    def set_rospath(self, ros_path):
+        self.ros_path = ros_path
+
+    def set_monitor(self, topic_monitor, node_monitor):
+        self.topic_monitor = topic_monitor
+        self.node_monitor = node_monitor
+
+    def open_topic_monitor(self):
+        topic_name = self.ui.cb_topic.currentText()
+        self.topic_monitor.open_monitor(topic_name)
+
+    def open_node_monitor(self):
+        node_name = self.ui.cb_node.currentText()
+        self.node_monitor.open_monitor(node_name)
 
     def pb_update(self):
         # node list
@@ -45,6 +58,7 @@ class DebugWindow():
         cmd = 'source /opt/ros/' + self.ros_distro + '/setup.bash'
         cmd += ' && '
         cmd += 'ros2 node list'
+        print(cmd)
 
         resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                               capture_output=True, text=True, timeout=3)
@@ -61,6 +75,7 @@ class DebugWindow():
         cmd = 'source /opt/ros/' + self.ros_distro + '/setup.bash'
         cmd += ' && '
         cmd += 'ros2 topic list'
+        print(cmd)
 
         resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                               capture_output=True, text=True, timeout=3)
@@ -71,18 +86,20 @@ class DebugWindow():
                 continue
             self.ui.cb_topic.addItem(item)
 
-    def cb_node(self, node_name):
+    def cb_node(self):
+        node_name = self.ui.cb_node.currentText()
+        if node_name == '':
+            return
+
         self.ui.lw_subtopic.clear()
         self.ui.lw_pubtopic.clear()
         sub_topics = []
         pub_topics = []
 
-        if node_name == '':
-            return
-
         cmd = 'source /opt/ros/' + self.ros_distro + '/setup.bash'
         cmd += ' && '
-        cmd += 'ros2 node info'
+        cmd += 'ros2 node info ' + node_name
+        print(cmd)
 
         resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                               capture_output=True, text=True, timeout=3)
@@ -145,18 +162,20 @@ class DebugWindow():
         for item in pub_topics:
             self.ui.lw_pubtopic.addItem(item)
 
-    def cb_topic(self, topic_name):
+    def cb_topic(self):
+        topic_name = self.ui.cb_topic.currentText()
+        if topic_name == '':
+            return
+
         self.ui.lw_pubnode.clear()
         self.ui.lw_subnode.clear()
         pub_nodes = []
         sub_nodes = []
 
-        if topic_name == '':
-            return
-
         cmd = 'source /opt/ros/' + self.ros_distro + '/setup.bash'
         cmd += ' && '
         cmd += 'ros2 topic info -v ' + topic_name
+        print(cmd)
 
         resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                               capture_output=True, text=True, timeout=3)
@@ -228,7 +247,7 @@ class DebugWindow():
                 if namespace == '/':
                     node_name = '/' + name
                 else:
-                    node_name = namespace + '/' + name    
+                    node_name = namespace + '/' + name
 
                 if pub_node_parse:
                     pub_nodes.append(node_name)
@@ -253,8 +272,3 @@ class DebugWindow():
         print("[INFO] Selected List Item :", topic_name)
         self.ui.cb_topic.setCurrentText(topic_name)
         self.ui.tab_debug.setCurrentIndex(0)
-    
-    def open_monitor(self):
-        topic_name = self.ui.cb_topic.currentText()
-
-        self.monitor.open_monitor(topic_name)

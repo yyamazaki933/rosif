@@ -18,11 +18,11 @@ class PlayerWindow():
         self.home_dir = os.getenv('HOME')
         self.player = None
         self.ros_distro = 'humble'
+        self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
         self.ui_file = ui_file
 
         self.ui = uic.loadUi(ui_file)
         self.ui.tb_bag.clicked.connect(self.tb_bag)
-        self.ui.tb_bash.clicked.connect(self.tb_bash)
         self.ui.pb_play.clicked.connect(self.pb_play)
         self.ui.pb_pause.clicked.connect(self.pb_pause)
         self.ui.pb_reset.clicked.connect(self.pb_reset)
@@ -30,11 +30,9 @@ class PlayerWindow():
     
     def save_log(self):
         rosbag_dir = self.ui.le_bag.text()
-        msg_source = self.ui.le_bash.text()
 
         log = { 
             'rosbag_dir': rosbag_dir, 
-            'msg_source': msg_source,
             }
 
         with open(self.ui_file + '.log', 'w') as file:
@@ -45,10 +43,8 @@ class PlayerWindow():
             with open(self.ui_file + '.log') as file:
                 log = yaml.safe_load(file)
                 rosbag_dir = log['rosbag_dir']
-                msg_source = log['msg_source']
             
             self.ui.le_bag.setText(rosbag_dir)
-            self.ui.le_bash.setText(msg_source)
 
         except FileNotFoundError:
             self.save_log()
@@ -63,6 +59,9 @@ class PlayerWindow():
 
     def set_rosdistro(self, ros_distro):
         self.ros_distro = ros_distro
+    
+    def set_rospath(self, ros_path):
+        self.ros_path = ros_path
 
     def tb_bag(self):
         bag = QFileDialog.getExistingDirectory(
@@ -71,13 +70,6 @@ class PlayerWindow():
         if bag != '':
             self.ui.le_bag.setText(bag)
             self.bag_info()
-            self.save_log()
-
-    def tb_bash(self):
-        result = QFileDialog.getOpenFileName(
-            self.ui, 'Choose ROS Bash File', self.home_dir, 'ROS Bash File (*.bash)')[0]
-        if result != '':
-            self.ui.le_bash.setText(result)
             self.save_log()
 
     def bag_info(self):
@@ -121,7 +113,6 @@ class PlayerWindow():
 
     def pb_play(self):
         rosbag_dir = self.ui.le_bag.text()
-        msg_source = self.ui.le_bash.text()
         rate = self.ui.sb_rate.value()
         start = self.ui.sb_offset.value()
 
@@ -129,7 +120,7 @@ class PlayerWindow():
         self.player.playerProglessTick.connect(self.timer_callback)
         self.player.playerFinished.connect(self.pb_reset)
         self.player.setRosbag(rosbag_dir)
-        self.player.setSource(msg_source)
+        self.player.setSource(self.ros_path)
         self.player.setRate(rate)
         self.player.setStartOffset(start)
         self.player.start()

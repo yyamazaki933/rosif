@@ -621,6 +621,9 @@
        <pointsize>15</pointsize>
       </font>
      </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::MultiSelection</enum>
+     </property>
     </widget>
    </item>
    <item row="3" column="0">
