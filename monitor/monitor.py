@@ -18,6 +18,7 @@ class FreqMonitor(QtCore.QThread):
         self.freq = 0
         self.msg_source = source
         self.topic = topic
+        self.timeout_cnt = 0
 
     def run(self):
         print("[INFO] Called FreqMonitor.run()")
@@ -32,9 +33,11 @@ class FreqMonitor(QtCore.QThread):
 
         while not self.__is_canceled:
             line = self.cmd_proc.stdout.readline()
-
+            
             if line == None:
-                return
+                self.freq = 0
+                self.currentFreqChanged.emit(self.freq)
+                continue
 
             if "average rate:" in line:
                 self.freq = int(re.split('[:.]', line)[1])

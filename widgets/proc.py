@@ -2,27 +2,21 @@
 
 import subprocess
 
-from PyQt5 import uic
+from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 
-class ProcWindow():
+class ProcWindow(QtWidgets.QWidget):
 
-    def __init__(self, ui_file):
-        self.ui = uic.loadUi(ui_file)
-        self.ui.pb_ref.clicked.connect(self.pb_ref)
-        self.ui.pb_kill.clicked.connect(self.pb_kill)
-        self.ui.lw_proc.itemDoubleClicked.connect(self.pb_kill)
+    def __init__(self, ui_file, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        uic.loadUi(ui_file, self)
+        self.pb_ref.clicked.connect(self.pb_ref_cb)
+        self.pb_kill.clicked.connect(self.pb_kill_cb)
+        self.lw_proc.itemDoubleClicked.connect(self.pb_kill_cb)
 
-    def show(self):
-        self.pb_ref()
-        self.ui.show()
-
-    def hide(self):
-        self.ui.hide()
-
-    def pb_ref(self):
-        self.ui.lw_proc.clear()
+    def pb_ref_cb(self):
+        self.lw_proc.clear()
 
         cmd = 'ps -A -f | grep ros'
         resp = subprocess.run(
@@ -42,10 +36,10 @@ class ProcWindow():
             if "grep ros" in proc:
                 continue
 
-            self.ui.lw_proc.addItem(pid + ' : ' + proc)
+            self.lw_proc.addItem(pid + ' : ' + proc)
 
-    def pb_kill(self):
-        select = self.ui.lw_proc.selectedItems()
+    def pb_kill_cb(self):
+        select = self.lw_proc.selectedItems()
 
         if len(select) == 1:
             item_vec = select[0].text().split()
