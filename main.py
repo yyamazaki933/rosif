@@ -6,7 +6,8 @@ import yaml
 
 from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtGui import QIcon
-from PyQt5 import uic
+from PyQt5 import uic, QtWidgets
+from qt_material import apply_stylesheet
 
 from widgets.monitor import TopicMonitorWindow
 from widgets.monitor import NodeMonitorWindow
@@ -25,7 +26,7 @@ def set_rosdistro():
     save_log()
 
 
-def tb_path():
+def pb_path_cb():
     result = QFileDialog.getOpenFileName(
         ui_main, 'Choose Optional Path File', HOME_DIR, 'Bash File (*.bash)')[0]
     if result == '':
@@ -74,6 +75,9 @@ if __name__ == '__main__':
     HOME_DIR = os.getenv('HOME')
 
     app = QApplication(sys.argv)
+    with open(SCRIPT_DIR + '/ui/stylesheet.qss', 'r') as f:
+        style = f.read()
+        app.setStyleSheet(style)
 
     ui_player = PlayerWindow(SCRIPT_DIR + '/ui/player.ui')
     ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')
@@ -83,8 +87,8 @@ if __name__ == '__main__':
 
     ui_main = uic.loadUi(SCRIPT_DIR + '/ui/main.ui')
     ui_main.setWindowIcon(QIcon(SCRIPT_DIR + '/img/ros.png'))
-    ui_main.tb_distro.clicked.connect(set_rosdistro)
-    ui_main.tb_path.clicked.connect(tb_path)
+    ui_main.pb_rosdistro.clicked.connect(set_rosdistro)
+    ui_main.pb_path.clicked.connect(pb_path_cb)
     
     ui_main.player_box.addWidget(ui_player)
     ui_main.nodem_box.addWidget(ui_node_monitor)

@@ -11,6 +11,7 @@ class ProcWindow(QtWidgets.QWidget):
     def __init__(self, ui_file, *args, **kwargs):
         super().__init__(*args, **kwargs)
         uic.loadUi(ui_file, self)
+        
         self.pb_ref.clicked.connect(self.pb_ref_cb)
         self.pb_kill.clicked.connect(self.pb_kill_cb)
         self.lw_proc.itemDoubleClicked.connect(self.pb_kill_cb)
@@ -50,7 +51,7 @@ class ProcWindow(QtWidgets.QWidget):
             message += " PID : " + pid + '\n'
             message += " CMD : " + proc
             resp = QMessageBox.warning(
-                self.ui, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+                self, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
 
             if resp == QMessageBox.Yes:
                 self.kill_process(pid)
@@ -59,7 +60,7 @@ class ProcWindow(QtWidgets.QWidget):
         else:
             message = "Kill the process ?"
             resp = QMessageBox.warning(
-                self.ui, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+                self, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
 
             if resp == QMessageBox.Yes:
                 for item in select:

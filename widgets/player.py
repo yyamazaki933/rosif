@@ -27,7 +27,7 @@ class PlayerWindow(QtWidgets.QWidget):
         self.load_log()
         self.bag_info()
 
-        self.tb_bag.clicked.connect(self.tb_bag_cb)
+        self.pb_bag.clicked.connect(self.pb_bag_cb)
         self.pb_play.clicked.connect(self.pb_play_cb)
         self.pb_pause.clicked.connect(self.pb_pause_cb)
         self.pb_reset.clicked.connect(self.pb_reset_cb)
@@ -60,7 +60,7 @@ class PlayerWindow(QtWidgets.QWidget):
     def set_rospath(self, ros_path):
         self.ros_path = ros_path
 
-    def tb_bag_cb(self):
+    def pb_bag_cb(self):
         bag = QFileDialog.getExistingDirectory(
             self, 'Choose Rosbag2 Directory', self.home_dir)
 
