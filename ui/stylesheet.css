@@ -1,8 +1,41 @@
 
 QWidget
 {
-    color: gray;
+    color: white;
     background-color: black;
+}
+
+QWidget:disabled
+{
+    color: gray;
+}
+
+Line
+{
+    background-color: rgb(43, 43, 43);
+}
+
+QScrollArea
+{
+    border: 1px solid rgb(43, 43, 43);
+    border-radius: 3px;
+}
+
+QGroupBox {
+    border: 1px solid rgb(43, 43, 43);
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 7px;
+    padding: 0px 5px 0px 5px;
+}
+
+QLabel
+{
+    color: gray;
 }
 
 /* QWidget:item:hover
@@ -22,14 +55,12 @@ QWidget:item:selected
     background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4d4d4d, stop: 0.1 #646464, stop: 1 #5d5d5d);
 } */
 
+
 QPushButton
 {
-    color: white;
-    border-radius: 3;
-    padding: 3px;
-    
-    background-color: rgb(0, 0, 0);
     border: 3px solid rgb(53, 53, 255);
+    border-radius: 3px;
+    padding: 3px;
 }
 
 QPushButton:hover
@@ -44,33 +75,30 @@ QPushButton:pressed
 
 QPushButton:disabled
 {
-    color: gray;
     border: 1px solid gray;
 }
 
-QLineEdit
+QLineEdit, QComboBox
 {
-    color: white;
     border-style: solid;
     background-color: rgb(43, 43, 43);
+    selection-background-color: rgb(53, 53, 255);
     padding: 3px;
 }
 
-QPlainTextEdit
+QPlainTextEdit, QListWidget
 {
     color: gray;
     border-style: solid;
     background-color: rgb(43, 43, 43);
+    selection-background-color: rgb(53, 53, 255);
 }
 
-QComboBox
+QSpinBox, QDoubleSpinBox
 {
-    color: white;
-    border-style: solid;
     background-color: rgb(43, 43, 43);
-    padding: 3px;
-
     selection-background-color: rgb(53, 53, 255);
+    padding: 3px;
 }
 
 QScrollBar {
@@ -118,7 +146,6 @@ QMainWindow::separator:hover
 
 QProgressBar
 {
-    color: white;
     border-style: solid;
     background-color: rgb(43, 43, 43);
     text-align: center;

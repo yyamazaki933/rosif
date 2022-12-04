@@ -35,6 +35,38 @@ def pb_path_cb():
     set_rospath()
 
 
+def pb_player_cb():
+    ui_main.main_win.setTitle('Rosbag Player')
+    ui_player.show()
+    ui_node_monitor.hide()
+    ui_topic_monitor.hide()
+    ui_proc.hide()
+
+
+def pb_nodemon_cb():
+    ui_main.main_win.setTitle('Node Monitor')
+    ui_player.hide()
+    ui_node_monitor.show()
+    ui_topic_monitor.hide()
+    ui_proc.hide()
+
+
+def pb_topicmon_cb():
+    ui_main.main_win.setTitle('Topic Monitor')
+    ui_player.hide()
+    ui_node_monitor.hide()
+    ui_topic_monitor.show()
+    ui_proc.hide()
+
+
+def pb_proc_cb():
+    ui_main.main_win.setTitle('Process Manager')
+    ui_player.hide()
+    ui_node_monitor.hide()
+    ui_topic_monitor.hide()
+    ui_proc.show()
+
+
 def set_rospath():
     rospath = ui_main.le_path.text()
     ui_player.set_rospath(rospath)
@@ -75,26 +107,37 @@ if __name__ == '__main__':
     HOME_DIR = os.getenv('HOME')
 
     app = QApplication(sys.argv)
-    with open(SCRIPT_DIR + '/ui/stylesheet.qss', 'r') as f:
+    with open(SCRIPT_DIR + '/ui/stylesheet.css', 'r') as f:
         style = f.read()
         app.setStyleSheet(style)
 
     ui_player = PlayerWindow(SCRIPT_DIR + '/ui/player.ui')
-    ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')
-    ui_node_monitor = NodeMonitorWindow(SCRIPT_DIR + '/ui/node_monitor.ui', SCRIPT_DIR + '/ui/node_monitor_topic.ui')
+    ui_node_monitor = NodeMonitorWindow(
+        SCRIPT_DIR + '/ui/node_monitor.ui', SCRIPT_DIR + '/ui/node_monitor_topic.ui')
     ui_topic_monitor = TopicMonitorWindow(SCRIPT_DIR + '/ui/topic_monitor.ui')
+    # ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')
     ui_proc = ProcWindow(SCRIPT_DIR + '/ui/proc.ui')
 
     ui_main = uic.loadUi(SCRIPT_DIR + '/ui/main.ui')
     ui_main.setWindowIcon(QIcon(SCRIPT_DIR + '/img/ros.png'))
     ui_main.pb_rosdistro.clicked.connect(set_rosdistro)
     ui_main.pb_path.clicked.connect(pb_path_cb)
-    
-    ui_main.player_box.addWidget(ui_player)
-    ui_main.nodem_box.addWidget(ui_node_monitor)
-    ui_main.topicm_box.addWidget(ui_topic_monitor)
-    ui_main.topicinfo_box.addWidget(ui_topicinfo)
-    ui_main.proc_box.addWidget(ui_proc)
+    ui_main.pb_player.clicked.connect(pb_player_cb)
+    ui_main.pb_nodemon.clicked.connect(pb_nodemon_cb)
+    ui_main.pb_topicmon.clicked.connect(pb_topicmon_cb)
+    ui_main.pb_proc.clicked.connect(pb_proc_cb)
+
+    ui_main.main_box.addWidget(ui_player)
+    ui_main.main_box.addWidget(ui_node_monitor)
+    ui_main.main_box.addWidget(ui_topic_monitor)
+    # ui_main.main_box.addWidget(ui_topicinfo)
+    ui_main.main_box.addWidget(ui_proc)
+
+    ui_main.main_win.setTitle('Rosbag Player')
+    ui_node_monitor.hide()
+    ui_topic_monitor.hide()
+    # ui_topicinfo.hide()
+    ui_proc.hide()
 
     # ui_util.tb_bag.clicked.connect(tb_bag)
     # ui_util.tb_wcsv.clicked.connect(tb_wcsv)

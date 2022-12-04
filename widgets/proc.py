@@ -41,8 +41,11 @@ class ProcWindow(QtWidgets.QWidget):
 
     def pb_kill_cb(self):
         select = self.lw_proc.selectedItems()
+        
+        if len(select) == 0:
+            return
 
-        if len(select) == 1:
+        elif len(select) == 1:
             item_vec = select[0].text().split()
             pid = item_vec[0]
             proc = str.join(' ', item_vec[2:])
@@ -55,7 +58,7 @@ class ProcWindow(QtWidgets.QWidget):
 
             if resp == QMessageBox.Yes:
                 self.kill_process(pid)
-                self.pb_ref()
+                self.pb_ref_cb()
 
         else:
             message = "Kill the process ?"
@@ -67,7 +70,7 @@ class ProcWindow(QtWidgets.QWidget):
                     item_vec = item.text().split()
                     pid = item_vec[0]
                     self.kill_process(pid)
-                self.pb_ref()
+                self.pb_ref_cb()
 
     def kill_process(self, pid):
         cmd = 'kill -9 ' + pid
