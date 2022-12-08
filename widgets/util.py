@@ -13,6 +13,14 @@ class UtilWindow(QWidget):
     def __init__(self, ui_file, *args, **kwargs):
         super().__init__(*args, **kwargs)
         uic.loadUi(ui_file, self)
+        self.ros_distro = 'humble'
+        self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
+        
+    def set_rosdistro(self, ros_distro):
+        self.ros_distro = ros_distro
+
+    def set_rospath(self, ros_path):
+        self.ros_path = ros_path
 
     def tb_wcsv(self):
         bag_dir = self.le_bag.text()

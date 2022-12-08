@@ -12,6 +12,7 @@ class TopicInfoWindow(QtWidgets.QWidget):
         uic.loadUi(ui_file, self)
 
         self.ros_distro = 'humble'
+        self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
         self.topics = []
         # self.node_monitor = None
 
@@ -24,7 +25,10 @@ class TopicInfoWindow(QtWidgets.QWidget):
 
     def set_rosdistro(self, ros_distro):
         self.ros_distro = ros_distro
-
+    
+    def set_rospath(self, ros_path):
+        self.ros_path = ros_path
+    
     # def set_monitor(self, node_monitor):
     #     self.node_monitor = node_monitor
 

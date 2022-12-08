@@ -11,10 +11,18 @@ class ProcWindow(QtWidgets.QWidget):
     def __init__(self, ui_file, *args, **kwargs):
         super().__init__(*args, **kwargs)
         uic.loadUi(ui_file, self)
+        self.ros_distro = 'humble'
+        self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
         
         self.pb_ref.clicked.connect(self.pb_ref_cb)
         self.pb_kill.clicked.connect(self.pb_kill_cb)
         self.lw_proc.itemDoubleClicked.connect(self.pb_kill_cb)
+
+    def set_rosdistro(self, ros_distro):
+        self.ros_distro = ros_distro
+    
+    def set_rospath(self, ros_path):
+        self.ros_path = ros_path
 
     def pb_ref_cb(self):
         self.lw_proc.clear()

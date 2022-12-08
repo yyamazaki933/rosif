@@ -2,153 +2,111 @@
 
 import sys
 import os
-import yaml
 
-from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
-from PyQt5 import uic, QtWidgets
-from qt_material import apply_stylesheet
+from PyQt5 import uic
 
 from widgets.monitor import TopicMonitorWindow
 from widgets.monitor import NodeMonitorWindow
 from widgets.player import PlayerWindow
 from widgets.topicinfo import TopicInfoWindow
+from widgets.launcher import LauncherWindow
 from widgets.proc import ProcWindow
+from widgets.setting import SettingWindow
+
 import util.plotter as plotter
 import util.ros2bag2csv as bag2csv
 
 
-def set_rosdistro():
-    ros_distro = ui_main.le_distro.text()
-    ui_player.set_rosdistro(ros_distro)
-    ui_topic_monitor.set_rosdistro(ros_distro)
-    ui_node_monitor.set_rosdistro(ros_distro)
-    save_log()
-
-
-def pb_path_cb():
-    result = QFileDialog.getOpenFileName(
-        ui_main, 'Choose Optional Path File', HOME_DIR, 'Bash File (*.bash)')[0]
-    if result == '':
-        return
-    ui_main.le_path.setText(result)
-    set_rospath()
-
-
 def pb_player_cb():
-    ui_main.main_win.setTitle('Rosbag Player')
+    hide_widgets()
     ui_player.show()
-    ui_node_monitor.hide()
-    ui_topic_monitor.hide()
-    ui_proc.hide()
 
 
 def pb_nodemon_cb():
-    ui_main.main_win.setTitle('Node Monitor')
-    ui_player.hide()
+    hide_widgets()
     ui_node_monitor.show()
-    ui_topic_monitor.hide()
-    ui_proc.hide()
 
 
 def pb_topicmon_cb():
-    ui_main.main_win.setTitle('Topic Monitor')
-    ui_player.hide()
-    ui_node_monitor.hide()
+    hide_widgets()
     ui_topic_monitor.show()
-    ui_proc.hide()
+
+
+def pb_launcher_cb():
+    hide_widgets()
+    ui_launcher.show()
 
 
 def pb_proc_cb():
-    ui_main.main_win.setTitle('Process Manager')
-    ui_player.hide()
-    ui_node_monitor.hide()
-    ui_topic_monitor.hide()
+    hide_widgets()
     ui_proc.show()
 
 
-def set_rospath():
-    rospath = ui_main.le_path.text()
-    ui_player.set_rospath(rospath)
-    ui_topic_monitor.set_rospath(rospath)
-    ui_node_monitor.set_rospath(rospath)
-    save_log()
+def pb_setting_cb():
+    hide_widgets()
+    ui_setting.show()
 
 
-def save_log():
-    rosdistro = ui_main.le_distro.text()
-    rospath = ui_main.le_path.text()
-
-    log = {
-        'rosdistro': rosdistro,
-        'rospath': rospath,
-    }
-
-    with open(SCRIPT_DIR + '/ui/main.ui' + '.log', 'w') as file:
-        yaml.dump(log, file)
+def hide_widgets():
+    for widget in widgets:
+        widget.hide()
 
 
-def load_log():
-    try:
-        with open(SCRIPT_DIR + '/ui/main.ui' + '.log') as file:
-            log = yaml.safe_load(file)
-            rosdistro = log['rosdistro']
-            rospath = log['rospath']
+def set_rosdistro(ros_distro):
+    for widget in widgets:
+        widget.set_rosdistro(ros_distro)
 
-        ui_main.le_distro.setText(rosdistro)
-        ui_main.le_path.setText(rospath)
 
-    except FileNotFoundError:
-        save_log()
+def set_rospath(ros_path):
+    for widget in widgets:
+        widget.set_rospath(ros_path)
 
 
 if __name__ == '__main__':
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-    HOME_DIR = os.getenv('HOME')
 
     app = QApplication(sys.argv)
     with open(SCRIPT_DIR + '/ui/stylesheet.css', 'r') as f:
         style = f.read()
         app.setStyleSheet(style)
 
+    ui_main = uic.loadUi(SCRIPT_DIR + '/ui/main.ui')
+    ui_main.setWindowIcon(QIcon(SCRIPT_DIR + '/img/ros.png'))
+
+    ui_main.pb_player.clicked.connect(pb_player_cb)
+    ui_main.pb_nodemon.clicked.connect(pb_nodemon_cb)
+    ui_main.pb_topicmon.clicked.connect(pb_topicmon_cb)
+    ui_main.pb_launcher.clicked.connect(pb_launcher_cb)
+    ui_main.pb_proc.clicked.connect(pb_proc_cb)
+    ui_main.pb_setting.clicked.connect(pb_setting_cb)
+
     ui_player = PlayerWindow(SCRIPT_DIR + '/ui/player.ui')
     ui_node_monitor = NodeMonitorWindow(
         SCRIPT_DIR + '/ui/node_monitor.ui', SCRIPT_DIR + '/ui/node_monitor_topic.ui')
     ui_topic_monitor = TopicMonitorWindow(SCRIPT_DIR + '/ui/topic_monitor.ui')
-    # ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')
+    # ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')LauncherWindow
+    ui_launcher = LauncherWindow(SCRIPT_DIR + '/ui/launcher.ui')
     ui_proc = ProcWindow(SCRIPT_DIR + '/ui/proc.ui')
+    ui_setting = SettingWindow(SCRIPT_DIR + '/ui/setting.ui')
+    ui_setting.settingRosDistro.connect(set_rosdistro)
+    ui_setting.settingRosPath.connect(set_rospath)
 
-    ui_main = uic.loadUi(SCRIPT_DIR + '/ui/main.ui')
-    ui_main.setWindowIcon(QIcon(SCRIPT_DIR + '/img/ros.png'))
-    ui_main.pb_rosdistro.clicked.connect(set_rosdistro)
-    ui_main.pb_path.clicked.connect(pb_path_cb)
-    ui_main.pb_player.clicked.connect(pb_player_cb)
-    ui_main.pb_nodemon.clicked.connect(pb_nodemon_cb)
-    ui_main.pb_topicmon.clicked.connect(pb_topicmon_cb)
-    ui_main.pb_proc.clicked.connect(pb_proc_cb)
+    widgets = []
+    widgets.append(ui_player)
+    widgets.append(ui_node_monitor)
+    widgets.append(ui_topic_monitor)
+    widgets.append(ui_launcher)
+    widgets.append(ui_proc)
+    widgets.append(ui_setting)
 
-    ui_main.main_box.addWidget(ui_player)
-    ui_main.main_box.addWidget(ui_node_monitor)
-    ui_main.main_box.addWidget(ui_topic_monitor)
-    # ui_main.main_box.addWidget(ui_topicinfo)
-    ui_main.main_box.addWidget(ui_proc)
+    for widget in widgets:
+        ui_main.main_box.addWidget(widget)
+        widget.hide()
+    ui_player.show()
 
-    ui_main.main_win.setTitle('Rosbag Player')
-    ui_node_monitor.hide()
-    ui_topic_monitor.hide()
-    # ui_topicinfo.hide()
-    ui_proc.hide()
-
-    # ui_util.tb_bag.clicked.connect(tb_bag)
-    # ui_util.tb_wcsv.clicked.connect(tb_wcsv)
-    # ui_util.tb_rcsv.clicked.connect(tb_rcsv)
-    # ui_util.tb_plot.clicked.connect(tb_plot)
-    # ui_util.tb_kml.clicked.connect(tb_kml)
-
-    load_log()
-    set_rospath()
-    set_rosdistro()
-
+    ui_setting.load_log()
     ui_main.show()
 
     sys.exit(app.exec())
