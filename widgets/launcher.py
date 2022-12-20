@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import xml.etree.ElementTree as ET
 
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
@@ -34,6 +35,17 @@ class LauncherWindow(QtWidgets.QWidget):
             return
 
         self.le_xml.setText(xml)
+
+        tree = ET.parse(xml) # xml.etree.ElementTree.ElementTree object
+        root = tree.getroot()
+        args = root.findall('arg')
+        for arg in args:
+            arg_name = arg.attrib['name']
+            try:
+                arg_val = arg.attrib['default']
+            except:
+                arg_val = ''
+            print(arg_name, arg_val)
 
     def pb_launch_cb(self):
         xml = self.le_xml.text()

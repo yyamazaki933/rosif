@@ -3,6 +3,7 @@
 from PyQt5 import uic, QtWidgets
 
 from util.common import *
+from widgets.monitor import TopicMonitorWindow
 
 
 class TopicInfoWindow(QtWidgets.QWidget):
@@ -15,11 +16,14 @@ class TopicInfoWindow(QtWidgets.QWidget):
         self.ros_path = '/opt/ros/' + self.ros_distro + '/setup.bash'
         self.topics = []
         # self.node_monitor = None
+        self.ui_topic_monitor = TopicMonitorWindow(ui_file.replace('/topic_info.ui', '/topic_monitor.ui'))
+        self.ui_topic_monitor.set_rosdistro(self.ros_distro)
+        self.ui_topic_monitor.set_rospath(self.ros_path)
 
         self.pb_update.clicked.connect(self.pb_update_cb)
+        self.pb_monitor.clicked.connect(self.pb_monitor_cb)
         self.cb_topic.currentTextChanged.connect(self.cb_topic_cb)
         self.cb_ns.currentTextChanged.connect(self.cb_ns_cb)
-
         # self.lw_subnode.itemDoubleClicked.connect(self.node_selected)
         # self.lw_pubnode.itemDoubleClicked.connect(self.node_selected)
 
@@ -35,6 +39,16 @@ class TopicInfoWindow(QtWidgets.QWidget):
     # def open_node_monitor(self):
     #     node_name = self.cb_node.currentText()
     #     self.node_monitor.open_monitor(node_name)
+
+    def pb_monitor_cb(self):
+        self.ui_topic_monitor.pb_update_cb()
+        
+        topic_name = self.cb_topic.currentText()
+        topic_type = self.le_type.text()
+        
+        self.ui_topic_monitor.cb_topic.setCurrentText(topic_name)
+        self.ui_topic_monitor.le_type.setText(topic_type)
+        self.ui_topic_monitor.show()
 
     def pb_update_cb(self):
         self.cb_topic.clear()

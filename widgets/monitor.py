@@ -24,6 +24,10 @@ class TopicMonitorWindow(QtWidgets.QWidget):
         self.pb_monitor.clicked.connect(self.pb_monitor_cb)
         self.cb_topic.currentTextChanged.connect(self.cb_topic_cb)
         self.cb_ns.currentTextChanged.connect(self.cb_ns_cb)
+        
+        self.prog_hz.setRange(0, 100)
+        self.prog_hz.setValue(0)
+        self.pte_echo.clear()
 
     def set_rosdistro(self, ros_distro):
         self.ros_distro = ros_distro

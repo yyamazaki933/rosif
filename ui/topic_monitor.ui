@@ -36,25 +36,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0" rowspan="2">
-       <widget class="QLabel" name="label_10">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Topic</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -191,18 +172,10 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="2">
-       <widget class="QComboBox" name="cb_topic">
-        <property name="placeholderText">
-         <string>topic name</string>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="cb_topic"/>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QComboBox" name="cb_ns">
-        <property name="placeholderText">
-         <string>grep namespace</string>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="cb_ns"/>
       </item>
       <item row="2" column="1" colspan="2">
        <widget class="QLineEdit" name="le_type">
@@ -272,6 +245,32 @@
         </property>
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Topic Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Namespace</string>
         </property>
        </widget>
       </item>

@@ -24,9 +24,13 @@ class SettingWindow(QtWidgets.QWidget):
 
     def set_rosdistro(self, ros_distro):
         self.ros_distro = ros_distro
+        self.le_distro.setText(ros_distro)
+        self.save_log()
     
     def set_rospath(self, ros_path):
         self.ros_path = ros_path
+        self.le_path.setText(ros_path)
+        self.save_log()
 
     def pb_rosdistro_cb(self):
         rosdistro = self.le_distro.text()

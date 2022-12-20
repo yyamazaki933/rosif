@@ -86,6 +86,11 @@ QLineEdit, QComboBox
     padding: 3px;
 }
 
+QAbstractItemView
+{
+    background-color: rgb(43, 43, 43);
+}
+
 QPlainTextEdit, QListWidget
 {
     border-style: solid;

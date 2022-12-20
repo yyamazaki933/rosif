@@ -45,6 +45,12 @@ class ProcWindow(QtWidgets.QWidget):
             if "grep ros" in proc:
                 continue
 
+            if "rosif" in proc:
+                continue
+            
+            if "ros2cli" in proc:
+                continue
+
             self.lw_proc.addItem(pid + ' : ' + proc)
 
     def pb_kill_cb(self):

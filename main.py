@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 
-from widgets.monitor import TopicMonitorWindow
 from widgets.monitor import NodeMonitorWindow
 from widgets.player import PlayerWindow
 from widgets.topicinfo import TopicInfoWindow
@@ -26,12 +25,14 @@ def pb_player_cb():
 
 def pb_nodemon_cb():
     hide_widgets()
+    ui_node_monitor.pb_update_cb()
     ui_node_monitor.show()
 
 
 def pb_topicmon_cb():
     hide_widgets()
-    ui_topic_monitor.show()
+    ui_topic_info.pb_update_cb()
+    ui_topic_info.show()
 
 
 def pb_launcher_cb():
@@ -41,6 +42,7 @@ def pb_launcher_cb():
 
 def pb_proc_cb():
     hide_widgets()
+    ui_proc.pb_ref_cb()
     ui_proc.show()
 
 
@@ -85,8 +87,7 @@ if __name__ == '__main__':
     ui_player = PlayerWindow(SCRIPT_DIR + '/ui/player.ui')
     ui_node_monitor = NodeMonitorWindow(
         SCRIPT_DIR + '/ui/node_monitor.ui', SCRIPT_DIR + '/ui/node_monitor_topic.ui')
-    ui_topic_monitor = TopicMonitorWindow(SCRIPT_DIR + '/ui/topic_monitor.ui')
-    # ui_topicinfo = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')LauncherWindow
+    ui_topic_info = TopicInfoWindow(SCRIPT_DIR + '/ui/topic_info.ui')
     ui_launcher = LauncherWindow(SCRIPT_DIR + '/ui/launcher.ui')
     ui_proc = ProcWindow(SCRIPT_DIR + '/ui/proc.ui')
     ui_setting = SettingWindow(SCRIPT_DIR + '/ui/setting.ui')
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     widgets = []
     widgets.append(ui_player)
     widgets.append(ui_node_monitor)
-    widgets.append(ui_topic_monitor)
+    widgets.append(ui_topic_info)
     widgets.append(ui_launcher)
     widgets.append(ui_proc)
     widgets.append(ui_setting)
