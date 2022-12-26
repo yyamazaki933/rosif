@@ -1,0 +1,9 @@
+[Desktop Entry]
+
+Type=Application
+Version=1.0
+Name=rosif
+Exec=/usr/bin/python3 /home/yudai/rosif/main.py %f
+Icon=ros
+MimeType=application/vnd.sqlite3;
+Terminal=true

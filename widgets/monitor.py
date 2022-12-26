@@ -217,8 +217,6 @@ class NodeMonitoritem(QtWidgets.QWidget):
 
     def stop(self):
         self.freq_monitor.stop()
-        self.freq_monitor = None
-        self.freq.setValue(0)
 
     def freq_callback(self, freq):
         if freq > self.freq.maximum():

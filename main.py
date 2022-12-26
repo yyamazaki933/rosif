@@ -25,13 +25,11 @@ def pb_player_cb():
 
 def pb_nodemon_cb():
     hide_widgets()
-    ui_node_monitor.pb_update_cb()
     ui_node_monitor.show()
 
 
 def pb_topicmon_cb():
     hide_widgets()
-    ui_topic_info.pb_update_cb()
     ui_topic_info.show()
 
 
@@ -42,7 +40,6 @@ def pb_launcher_cb():
 
 def pb_proc_cb():
     hide_widgets()
-    ui_proc.pb_ref_cb()
     ui_proc.show()
 
 
@@ -105,9 +102,17 @@ if __name__ == '__main__':
     for widget in widgets:
         ui_main.main_box.addWidget(widget)
         widget.hide()
-    ui_player.show()
 
     ui_setting.load_log()
+    ui_player.show()
     ui_main.show()
+
+    rosbag = ''
+    try:
+        rosbag = sys.argv[1]
+        ui_player.set_rosbag(rosbag)
+        print("[INFO] App start with rosbag", rosbag)
+    except:
+        print("[INFO] App start")
 
     sys.exit(app.exec())

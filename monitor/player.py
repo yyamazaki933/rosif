@@ -41,7 +41,7 @@ class RosbagPlayer(QtCore.QThread):
 
         cmd = 'source ' + self.msg_source
         cmd += ' && '
-        cmd += 'exec ros2 bag play ' + self.rosbag_dir
+        cmd += 'ros2 bag play ' + self.rosbag_dir
         cmd += ' --clock 200'
         cmd += ' --rate ' + str(self.rate)
         if self.offset != 0:
@@ -83,13 +83,7 @@ class RosbagPlayer(QtCore.QThread):
         print("[INFO] Called RosbagPlayer.pause()")
 
     def stop(self):
-        self.cmd_proc.kill()
         self.is_running = False
         self.is_stopped = True
-
-        self.quit()
-        self.wait()
-
         time.sleep(1)
-
         print("[INFO] Called RosbagPlayer.stop()")

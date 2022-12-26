@@ -51,6 +51,9 @@ class ProcWindow(QtWidgets.QWidget):
             if "ros2cli" in proc:
                 continue
 
+            if "defunct" in proc:
+                continue
+
             self.lw_proc.addItem(pid + ' : ' + proc)
 
     def pb_kill_cb(self):

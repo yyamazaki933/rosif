@@ -32,7 +32,9 @@ class TopicInfoWindow(QtWidgets.QWidget):
     
     def set_rospath(self, ros_path):
         self.ros_path = ros_path
-    
+        self.ui_topic_monitor.set_rosdistro(self.ros_distro)
+        self.ui_topic_monitor.set_rospath(self.ros_path)
+        
     # def set_monitor(self, node_monitor):
     #     self.node_monitor = node_monitor
 

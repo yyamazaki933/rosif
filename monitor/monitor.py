@@ -5,6 +5,7 @@ import re
 import subprocess
 
 from PyQt5 import QtCore
+from util.common import kill_proc
 
 
 class FreqMonitor(QtCore.QThread):
@@ -14,7 +15,6 @@ class FreqMonitor(QtCore.QThread):
     def __init__(self, source, topic):
         super().__init__(None)
 
-        self.__is_canceled = False
         self.freq = 0
         self.msg_source = source
         self.topic = topic
@@ -31,7 +31,7 @@ class FreqMonitor(QtCore.QThread):
         self.cmd_proc = subprocess.Popen(
             cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, text=True)
 
-        while not self.__is_canceled:
+        while True:
             line = self.cmd_proc.stdout.readline()
             
             if line == None:
@@ -46,17 +46,7 @@ class FreqMonitor(QtCore.QThread):
             time.sleep(0.5)
 
     def stop(self):
-        self.cmd_proc.kill()
-
-        while True:
-            if self.cmd_proc.poll() != None:
-                self.cmd_proc = None
-                break
-        self.__is_canceled = True
-
-        self.quit()
-        self.wait()
-
+        kill_proc(self.topic)
         print("[INFO] Called FreqMonitor.stop()")
 
 
@@ -89,8 +79,4 @@ class EchoMonitor(QtCore.QThread):
 
     def stop(self):
         self.__is_canceled = True
-
-        self.quit()
-        self.wait()
-
         print("[INFO] Called EchoMonitor.stop()")

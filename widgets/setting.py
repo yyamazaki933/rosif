@@ -65,7 +65,9 @@ class SettingWindow(QtWidgets.QWidget):
 
             self.le_distro.setText(rosdistro)
             self.le_path.setText(rospath)
+            
             self.settingRosDistro.emit(rosdistro)
             self.settingRosPath.emit(rospath)
+
         except FileNotFoundError:
             self.save_log()

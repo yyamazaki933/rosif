@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QTextCursor
 
 import monitor.player as player
-
+import util.common as common
 
 class PlayerWindow(QtWidgets.QWidget):
 
@@ -61,11 +61,16 @@ class PlayerWindow(QtWidgets.QWidget):
         self.ros_path = ros_path
 
     def pb_bag_cb(self):
-        bag = QFileDialog.getExistingDirectory(
-            self, 'Choose Rosbag2 Directory', self.home_dir)
+        bag = QFileDialog.getOpenFileName(
+            self, 'Choose Rosbag2 File', self.home_dir, 'SQLite3 database File (*.db3)')[0]
+        
+        self.set_rosbag(bag)
 
-        if bag != '':
-            self.le_bag.setText(bag)
+    def set_rosbag(self, bag):
+        bagdir = os.path.dirname(bag)
+
+        if bagdir != '':
+            self.le_bag.setText(bagdir)
             self.bag_info()
             self.save_log()
 
@@ -138,6 +143,8 @@ class PlayerWindow(QtWidgets.QWidget):
     def pb_reset_cb(self):
         self.player.stop()
         self.player = None
+
+        common.kill_proc("ros2 bag play")
 
         start = self.sb_offset.value()
         self.progress.setValue(start)

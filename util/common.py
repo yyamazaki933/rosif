@@ -222,3 +222,26 @@ def getTopicType(ros_distro, topic_name):
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     return resp.stdout.strip('\n')
+
+def kill_proc(keyword):
+    cmd = 'ps -A -f | grep ros'
+    resp = subprocess.run(
+        cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
+
+    lines = resp.stdout.split('\n')
+
+    for item in lines:
+        if item == '':
+            continue
+
+        item_vec = item.split()
+        pid = item_vec[1]
+        pid = format(pid, '>10')
+        proc = str.join(' ', item_vec[7:])
+
+        if keyword in proc:
+            cmd = 'kill -9 ' + pid
+            print('kill_proc() : ', cmd)
+            subprocess.run(
+                cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
+
