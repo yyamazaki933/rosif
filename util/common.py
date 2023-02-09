@@ -3,13 +3,14 @@
 import subprocess
 
 
-def getNodeList(ros_distro):
+def getNodeList(path):
     node_l = []
 
-    cmd = 'source /opt/ros/' + ros_distro + '/setup.bash'
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 node list'
 
+    print('[INFO]', cmd)
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     nodes = resp.stdout.split('\n')
@@ -21,13 +22,14 @@ def getNodeList(ros_distro):
     return node_l
 
 
-def getTopicList(ros_distro):
+def getTopicList(path):
     topic_l = []
 
-    cmd = 'source /opt/ros/' + ros_distro + '/setup.bash'
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic list'
 
+    print('[INFO]', cmd)
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     topics = resp.stdout.split('\n')
@@ -53,12 +55,12 @@ def getNameSpaceList(src_list):
     return ns_l
 
 
-def getNodeInfo(ros_distro, node_name):
-    cmd = 'source /opt/ros/' + ros_distro + '/setup.bash'
+def getNodeInfo(path, node_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 node info ' + node_name
-    print(cmd)
 
+    print('[INFO]', cmd)
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     lines = resp.stdout.split('\n')
@@ -125,12 +127,12 @@ def getNodeInfo(ros_distro, node_name):
     return sub_topics, pub_topics
 
 
-def getTopicInfo(ros_distro, topic_name):
-    cmd = 'source /opt/ros/' + ros_distro + '/setup.bash'
+def getTopicInfo(path, topic_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic info -v ' + topic_name
-    print(cmd)
 
+    print('[INFO]', cmd)
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     lines = resp.stdout.split('\n')
@@ -213,18 +215,20 @@ def getTopicInfo(ros_distro, topic_name):
     return topic_type, pub_nodes, sub_nodes
 
 
-def getTopicType(ros_distro, topic_name):
-    cmd = 'source /opt/ros/' + ros_distro + '/setup.bash'
+def getTopicType(path, topic_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic type ' + topic_name
-    print(cmd)
 
+    print('[INFO]', cmd)
     resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
                           capture_output=True, text=True, timeout=3)
     return resp.stdout.strip('\n')
 
 def kill_proc(keyword):
     cmd = 'ps -A -f | grep ros'
+
+    print('[INFO]', cmd)
     resp = subprocess.run(
         cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
 
@@ -241,7 +245,8 @@ def kill_proc(keyword):
 
         if keyword in proc:
             cmd = 'kill -9 ' + pid
-            print('kill_proc() : ', cmd)
+            
+            print('[INFO]', cmd)
             subprocess.run(
                 cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
 

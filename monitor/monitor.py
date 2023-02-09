@@ -70,7 +70,7 @@ class EchoMonitor(QtCore.QThread):
 
         while not self.__is_canceled:
             try:
-                resp = subprocess.run(cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
+                resp = subprocess.run(cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=5)
                 self.msgUpdated.emit(resp.stdout)
             except subprocess.TimeoutExpired:
                 self.msgUpdated.emit('[WARN] topic echo : timeout!')
