@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from PyQt5 import uic, QtWidgets
-from PyQt5.QtGui import QTextCursor
 
 import monitor.monitor as monitor
 from util.common import *

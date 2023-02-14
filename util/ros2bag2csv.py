@@ -11,7 +11,8 @@ from rosbags.serde import deserialize_cdr
 
 SUPORT_TYPE = [
     sensor_msgs.NAVSATFIX_TYPE,
-    geometry_msgs.POSE_STAMPED_TYPE
+    geometry_msgs.POSE_STAMPED_TYPE,
+    geometry_msgs.POSE_COV_STAMPED_TYPE
 ]
 
 
@@ -51,10 +52,10 @@ def writeCSV(bag_dir, topic):
                     data.append(sensor_msgs.navsatfix_parser(msg))
                     length += 1
 
-                if connection.msgtype == geometry_msgs.POSE_STAMPED_TYPE:
+                if 'geometry_msgs' in connection.msgtype:
                     if length == 0:
-                        data.append(geometry_msgs.POSE_STAMPED_HEADER)
-                    data.append(geometry_msgs.pose_stamped_parser(msg))
+                        data.append(geometry_msgs.getHeaderRow(connection.msgtype))
+                    data.append(geometry_msgs.parse(connection.msgtype, msg))
                     length += 1
 
                 print("length:", length, end='\r')
