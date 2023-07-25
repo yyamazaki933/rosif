@@ -5,6 +5,14 @@ import subprocess
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
+IGNORE=[
+    "grep",
+    "defunct",
+    "daemon",
+    "bin/rqt",
+    "player",
+    "rosif",
+]
 
 class ProcWindow(QtWidgets.QWidget):
 
@@ -38,13 +46,14 @@ class ProcWindow(QtWidgets.QWidget):
             pid = format(pid, '>10')
             proc = str.join(' ', item_vec[7:])
 
-            if "grep ros" in proc:
-                continue
-
-            if "rosif" in proc:
-                continue
+            ignore=False
+            for kwd in IGNORE:
+                if kwd in proc:
+                    print("IGNORED:", proc)
+                    ignore=True
+                    break
             
-            if "defunct" in proc:
+            if ignore:
                 continue
 
             self.lw_proc.addItem(pid + ' : ' + proc)
@@ -53,7 +62,16 @@ class ProcWindow(QtWidgets.QWidget):
         select = self.lw_proc.selectedItems()
         
         if len(select) == 0:
-            return
+            message = "Are you wants to kill all ros proc?"
+            resp = QMessageBox.warning(
+                self, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+
+            if resp == QMessageBox.Yes:
+                for i in range(self.lw_proc.count()):
+                    item_vec = self.lw_proc.item(i).text().split()
+                    pid = item_vec[0]
+                    self.kill_process(pid)
+                self.pb_ref_cb()
 
         elif len(select) == 1:
             item_vec = select[0].text().split()
