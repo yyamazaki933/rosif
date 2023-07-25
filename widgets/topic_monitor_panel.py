@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from PyQt5 import uic, QtWidgets
+from PyQt5.QtGui import QTextCursor
 
 import monitor.monitor as monitor
 from util.common import *
@@ -47,6 +48,7 @@ class TopicMonitorWindow(QtWidgets.QWidget):
         ns = getNameSpaceList(self.topics)
 
         for item in self.topics:
+            self.cb_topic.addItem('')
             self.cb_topic.addItem(item)
 
         for item in ns:

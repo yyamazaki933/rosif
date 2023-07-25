@@ -225,6 +225,31 @@ def getTopicType(path, topic_name):
                           capture_output=True, text=True, timeout=3)
     return resp.stdout.strip('\n')
 
+
+def getParamList(path, node_name):
+    cmd = 'source ' + path
+    cmd += ' && '
+    cmd += 'ros2 param list ' + node_name
+
+    print('[INFO]', cmd)
+    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
+                          capture_output=True, text=True, timeout=3)
+    list = resp.stdout.split('\n')
+    return [i.strip() for i in list]
+
+
+def getParam(path, param):
+    cmd = 'source ' + path
+    cmd += ' && '
+    cmd += 'ros2 param get ' + param
+
+    print('[INFO]', cmd)
+    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
+                          capture_output=True, text=True, timeout=3)
+    val = resp.stdout.split(':')[1].strip()
+    return val
+
+
 def kill_proc(keyword):
     cmd = 'ps -A -f | grep ros'
 

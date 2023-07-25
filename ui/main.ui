@@ -145,6 +145,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pb_param">
+         <property name="text">
+          <string>Param Interface</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pb_proc">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

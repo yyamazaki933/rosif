@@ -7,31 +7,29 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 
-from widgets.node_monitor import NodeMonitorWindow
-from widgets.topic_monitor import TopicMonitorWindow
+from widgets.node_monitor_panel import NodeMonitorWindow
+from widgets.topic_monitor_panel import TopicMonitorWindow
+from widgets.rosparam_panel import RosParamWindow
 from widgets.proc import ProcWindow
 from widgets.util import UtilWindow
 
 
-def pb_nodemon_cb():
+def pb_nodemon_call():
     hide_widgets()
     ui_node_monitor.show_widget()
 
 
-def pb_topicmon_cb():
+def pb_topicmon_call():
     hide_widgets()
     ui_topic_monitor.show_widget()
 
-
-def pb_util_cb():
+def pb_param_call():
     hide_widgets()
-    ui_util.show_widget()
+    ui_param.show_widget()
 
-
-def pb_proc_cb():
+def pb_proc_call():
     hide_widgets()
     ui_proc.show_widget()
-
 
 def hide_widgets():
     for widget in widgets:
@@ -59,20 +57,20 @@ if __name__ == '__main__':
     ui_main = uic.loadUi(SCRIPT_DIR + '/ui/main.ui')
     ui_main.setWindowIcon(QIcon(SCRIPT_DIR + '/img/ros.png'))
 
-    ui_main.pb_nodemon.clicked.connect(pb_nodemon_cb)
-    ui_main.pb_topicmon.clicked.connect(pb_topicmon_cb)
-    ui_main.pb_util.clicked.connect(pb_util_cb)
-    ui_main.pb_proc.clicked.connect(pb_proc_cb)
+    ui_main.pb_nodemon.clicked.connect(pb_nodemon_call)
+    ui_main.pb_topicmon.clicked.connect(pb_topicmon_call)
+    ui_main.pb_param.clicked.connect(pb_param_call)
+    ui_main.pb_proc.clicked.connect(pb_proc_call)
 
     ui_node_monitor = NodeMonitorWindow(SCRIPT_DIR + '/ui/node_monitor.ui', SCRIPT_DIR + '/ui/node_monitor_topic.ui', ws_paths)
     ui_topic_monitor = TopicMonitorWindow(SCRIPT_DIR + '/ui/topic_monitor.ui', ws_paths)
-    ui_util = UtilWindow(SCRIPT_DIR + '/ui/util.ui', ws_paths)
+    ui_param = RosParamWindow(SCRIPT_DIR + '/ui/rosparam.ui', ws_paths)
     ui_proc = ProcWindow(SCRIPT_DIR + '/ui/proc.ui')
 
     widgets = []
     widgets.append(ui_node_monitor)
     widgets.append(ui_topic_monitor)
-    widgets.append(ui_util)
+    widgets.append(ui_param)
     widgets.append(ui_proc)
 
     for widget in widgets:
