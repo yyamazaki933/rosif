@@ -32,12 +32,11 @@ class UtilWindow(QWidget):
             return
 
         self.le_bag.setText(bagdir)
-        _, topics = getTopicList(bag_dir)
+        _, topics = getTopicList(bagdir)
 
-        self.cb_topic.clear(item)
+        self.cb_topic.clear()
         for item in topics:
             self.cb_topic.addItem(item)
-        print('[INFO] set rosbag dir:', bagdir)
 
     def tb_csv_call(self):
         bag_dir = self.le_bag.text()

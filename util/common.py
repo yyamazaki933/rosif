@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
+from PyQt5.QtWidgets import QFileDialog
+
+ROS_DISTRO = 'humble'
 
 
-def getNodeList(path):
+def runCmd(cmd:str, timeout=None):
+    print("[INFO] runCmd()", cmd)
+    return subprocess.run(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout)
+
+def popenCmd(cmd:str):
+    print("[INFO] popenCmd()", cmd)
+    return subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+def getNodeList():
     node_l = []
 
-    cmd = 'source ' + path
+    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
     cmd += ' && '
     cmd += 'ros2 node list'
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
-                          capture_output=True, text=True, timeout=3)
+    resp = runCmd(cmd)
     nodes = resp.stdout.split('\n')
 
     for item in nodes:
@@ -22,16 +32,14 @@ def getNodeList(path):
     return node_l
 
 
-def getTopicList(path):
+def getTopicList():
     topic_l = []
 
-    cmd = 'source ' + path
+    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
     cmd += ' && '
     cmd += 'ros2 topic list'
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
-                          capture_output=True, text=True, timeout=3)
+    resp = runCmd(cmd)
     topics = resp.stdout.split('\n')
 
     for item in topics:
@@ -41,28 +49,12 @@ def getTopicList(path):
     return topic_l
 
 
-def getNameSpaceList(src_list):
-    ns_l = []
-    ns_l.append('/')
-
-    for item in src_list:
-        ns_vec = item.split('/')
-        ns = ns_vec[1]
-        if len(ns_vec) > 3:
-            if ns in ns_l:
-                continue
-            ns_l.append(ns)
-    return ns_l
-
-
-def getNodeInfo(path, node_name):
-    cmd = 'source ' + path
+def getNodeInfo(node_name):
+    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
     cmd += ' && '
     cmd += 'ros2 node info ' + node_name
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
-                          capture_output=True, text=True, timeout=3)
+    resp = runCmd(cmd)
     lines = resp.stdout.split('\n')
 
     '''
@@ -127,14 +119,12 @@ def getNodeInfo(path, node_name):
     return sub_topics, pub_topics
 
 
-def getTopicInfo(path, topic_name):
-    cmd = 'source ' + path
+def getTopicInfo(topic_name):
+    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
     cmd += ' && '
     cmd += 'ros2 topic info -v ' + topic_name
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
-                          capture_output=True, text=True, timeout=3)
+    resp = runCmd(cmd)
     lines = resp.stdout.split('\n')
 
     '''
@@ -215,23 +205,19 @@ def getTopicInfo(path, topic_name):
     return topic_type, pub_nodes, sub_nodes
 
 
-def getTopicType(path, topic_name):
-    cmd = 'source ' + path
+def getTopicType(topic_name):
+    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
     cmd += ' && '
     cmd += 'ros2 topic type ' + topic_name
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(cmd, shell=True, executable='/bin/bash',
-                          capture_output=True, text=True, timeout=3)
+    resp = runCmd(cmd)
     return resp.stdout.strip('\n')
+
 
 def kill_proc(keyword):
     cmd = 'ps -A -f | grep ros'
 
-    print('[INFO]', cmd)
-    resp = subprocess.run(
-        cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
-
+    resp = runCmd(cmd)
     lines = resp.stdout.split('\n')
 
     for item in lines:
@@ -245,8 +231,9 @@ def kill_proc(keyword):
 
         if keyword in proc:
             cmd = 'kill -9 ' + pid
-            
-            print('[INFO]', cmd)
-            subprocess.run(
-                cmd, shell=True, executable='/bin/bash', capture_output=True, text=True, timeout=3)
+            runCmd(cmd)
 
+
+def openPathFileDialog(parent):
+    home_dir = os.getenv('HOME')
+    return QFileDialog.getOpenFileName(parent, 'Open setup.bash file', home_dir, 'Bash File (*.bash)')[0]

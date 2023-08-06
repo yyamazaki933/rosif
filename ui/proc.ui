@@ -20,10 +20,10 @@
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Process Manager</string>
+      <string>ROS Process List</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0" colspan="2">
+      <item row="0" column="0" colspan="2">
        <widget class="QListWidget" name="lw_proc">
         <property name="palette">
          <palette>
@@ -100,20 +100,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="pb_kill">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Kill Process</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="QPushButton" name="pb_ref">
         <property name="minimumSize">
          <size>
@@ -126,10 +113,16 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
+      <item row="1" column="1">
+       <widget class="QPushButton" name="pb_kill">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>60</height>
+         </size>
+        </property>
         <property name="text">
-         <string>PID : Command</string>
+         <string>Kill Process</string>
         </property>
        </widget>
       </item>
