@@ -1,9 +1,58 @@
 #!/usr/bin/env python3
 
-from PyQt5 import uic, QtWidgets
+import re
+from PyQt5 import uic, QtWidgets, QtCore
 
-import monitor.monitor as monitor
 from util.common import *
+
+
+class FreqMonitor(QtCore.QThread):
+    currentFreqChanged = QtCore.pyqtSignal(int)
+
+    def __init__(self, source, topic):
+        super().__init__(None)
+
+        self.msg_source = source
+        self.topic = topic
+
+    def run(self):
+        cmd = 'source ' + self.msg_source
+        cmd += ' && '
+        cmd += 'ros2 topic hz ' + self.topic + ' --window 100'
+        proc = popenCmd(cmd)
+
+        while True:
+            line = proc.stdout.readline()
+            if "average rate:" in line:
+                freq = int(re.split('[:.]', line)[1])
+                self.currentFreqChanged.emit(freq)
+
+    def stop(self):
+        kill_proc('ros2 topic hz ' + self.topic)
+
+
+class EchoMonitor(QtCore.QThread):
+    msgUpdated = QtCore.pyqtSignal(str)
+
+    def __init__(self, source, topic):
+        super().__init__(None)
+
+        self.msg_source = source
+        self.topic = topic
+    
+    def run(self):
+        cmd = 'source ' + self.msg_source
+        cmd += ' && '
+        cmd += 'ros2 topic echo ' + self.topic
+        proc = popenCmd(cmd)
+
+        while True:
+            line = proc.stdout.readline()
+            if line:
+                self.msgUpdated.emit(line)
+
+    def stop(self):
+        kill_proc('ros2 topic echo ' + self.topic)
 
 
 class TopicMonitorWindow(QtWidgets.QWidget):
@@ -72,10 +121,10 @@ class TopicMonitorWindow(QtWidgets.QWidget):
         path = self.cb_path.currentText()
         if topic == '': return
 
-        self.freq_monitor = monitor.FreqMonitor(path, topic)
+        self.freq_monitor = FreqMonitor(path, topic)
         self.freq_monitor.currentFreqChanged.connect(self.freq_callback)
         self.freq_monitor.start()
-        self.echo_monitor = monitor.EchoMonitor(path, topic)
+        self.echo_monitor = EchoMonitor(path, topic)
         self.echo_monitor.msgUpdated.connect(self.echo_callback)
         self.echo_monitor.start()
         self.is_running = True

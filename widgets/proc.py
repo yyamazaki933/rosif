@@ -69,10 +69,10 @@ class ProcWindow(QtWidgets.QWidget):
         select = self.lw_proc.selectedItems()
         
         if len(select) == 0:
-            message = "Kill the all process ?\n"
+            message = "Are you wants to kill all ros proc?"
             resp = QMessageBox.warning(
                 self, "Process Kill", message, QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-            
+
             if resp == QMessageBox.Yes:
                 for i in range(self.lw_proc.count()):
                     item_vec = self.lw_proc.item(i).text().split()
