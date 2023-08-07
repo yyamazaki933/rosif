@@ -3,6 +3,6 @@
 Type=Application
 Version=1.0
 Name=rosif
-Exec=/usr/bin/python3 PATH/rosif %f
+Exec=/usr/bin/python3 PATH/launch.sh
 Icon=rosif
 Terminal=true
