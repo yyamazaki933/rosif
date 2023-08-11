@@ -18,8 +18,20 @@ class NodeListWindow(QtWidgets.QWidget):
         self.le_filter.editingFinished.connect(self.updateNodeList)
         self.list.itemDoubleClicked.connect(self.lw_item_call)
 
+        with open(script_dir + "/path.conf", 'r') as f:
+            self.default_path = f.readlines()[0].strip()
+
+    def show(self):
+        if not self.nodes:
+            self.pb_update_call()
+        super().show()
+
     def pb_update_call(self):
-        self.nodes = getNodeList()
+        nodes = getNodeList(self.default_path)
+        self.setNodeList(nodes)
+
+    def setNodeList(self, nodes):
+        self.nodes = nodes
         self.updateNodeList()
 
     def updateNodeList(self):
@@ -33,6 +45,7 @@ class NodeListWindow(QtWidgets.QWidget):
     def lw_item_call(self, item:QtWidgets.QListWidgetItem):
         node = item.text()
         node_info_ui = NodeInfoWindow(self.script_dir)
+        node_info_ui.setNodeList(self.nodes)
         node_info_ui.setNode(node)
         node_info_ui.show()
         self.child_windows.append(node_info_ui)
@@ -51,8 +64,20 @@ class TopicListWindow(QtWidgets.QWidget):
         self.le_filter.editingFinished.connect(self.updateTopicList)
         self.list.itemDoubleClicked.connect(self.lw_item_call)
 
+        with open(script_dir + "/path.conf", 'r') as f:
+            self.default_path = f.readlines()[0].strip()
+
+    def show(self):
+        if not self.topics:
+            self.pb_update_call()
+        super().show()
+
     def pb_update_call(self):
-        self.topics = getTopicList()
+        topics = getTopicList(self.default_path)
+        self.setTopicList(topics)
+    
+    def setTopicList(self, topics):
+        self.topics = topics
         self.updateTopicList()
 
     def updateTopicList(self):
@@ -66,6 +91,7 @@ class TopicListWindow(QtWidgets.QWidget):
     def lw_item_call(self, item:QtWidgets.QListWidgetItem):
         topic = item.text()
         topic_info_ui = TopicInfoWindow(self.script_dir)
+        topic_info_ui.setTopicList(self.topics)
         topic_info_ui.setTopic(topic)
         topic_info_ui.show()
         self.child_windows.append(topic_info_ui)

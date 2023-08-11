@@ -11,7 +11,7 @@ IGNORE_PROCS = [
     "rosif",
     "grep ros",
     "defunct",
-    "bin/rqt",
+    "rqt",
     "player",
     "daemon",
 ]
@@ -22,11 +22,15 @@ class ProcWindow(QtWidgets.QWidget):
         super().__init__(*args, **kwargs)
         uic.loadUi(script_dir + "/ui/proc.ui", self)
 
-        self.pb_ref.clicked.connect(self.pb_ref_cb)
-        self.pb_kill.clicked.connect(self.pb_kill_cb)
-        self.lw_proc.itemDoubleClicked.connect(self.pb_kill_cb)
+        self.pb_ref.clicked.connect(self.pb_ref_call)
+        self.pb_kill.clicked.connect(self.pb_kill_call)
+        self.lw_proc.itemDoubleClicked.connect(self.pb_kill_call)
 
-    def pb_ref_cb(self):
+    def show(self):
+        self.pb_ref_call()
+        super().show()
+
+    def pb_ref_call(self):
         self.lw_proc.clear()
 
         cmd = 'ps -A -f | grep ros'
@@ -65,7 +69,7 @@ class ProcWindow(QtWidgets.QWidget):
 
             self.lw_proc.addItem(pid + ' : ' + proc)
 
-    def pb_kill_cb(self):
+    def pb_kill_call(self):
         select = self.lw_proc.selectedItems()
         
         if len(select) == 0:
@@ -78,7 +82,7 @@ class ProcWindow(QtWidgets.QWidget):
                     item_vec = self.lw_proc.item(i).text().split()
                     pid = item_vec[0]
                     self.kill_process(pid)
-                self.pb_ref_cb()
+                self.pb_ref_call()
 
         elif len(select) == 1:
             item_vec = select[0].text().split()
@@ -93,7 +97,7 @@ class ProcWindow(QtWidgets.QWidget):
 
             if resp == QMessageBox.Yes:
                 self.kill_process(pid)
-                self.pb_ref_cb()
+                self.pb_ref_call()
 
         else:
             message = "Kill the process ?"
@@ -105,7 +109,7 @@ class ProcWindow(QtWidgets.QWidget):
                     item_vec = item.text().split()
                     pid = item_vec[0]
                     self.kill_process(pid)
-                self.pb_ref_cb()
+                self.pb_ref_call()
 
     def kill_process(self, pid):
         cmd = 'kill -9 ' + pid

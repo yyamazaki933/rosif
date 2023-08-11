@@ -4,8 +4,6 @@ import os
 import subprocess
 from PyQt5.QtWidgets import QFileDialog
 
-ROS_DISTRO = 'humble'
-
 
 def runCmd(cmd:str, timeout=None):
     print("[INFO] runCmd()", cmd)
@@ -15,10 +13,10 @@ def popenCmd(cmd:str):
     print("[INFO] popenCmd()", cmd)
     return subprocess.Popen(cmd, shell=True, executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-def getNodeList():
+def getNodeList(path):
     node_l = []
 
-    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 node list'
 
@@ -32,10 +30,10 @@ def getNodeList():
     return node_l
 
 
-def getTopicList():
+def getTopicList(path):
     topic_l = []
 
-    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic list'
 
@@ -49,8 +47,8 @@ def getTopicList():
     return topic_l
 
 
-def getNodeInfo(node_name):
-    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
+def getNodeInfo(path, node_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 node info ' + node_name
 
@@ -119,8 +117,8 @@ def getNodeInfo(node_name):
     return sub_topics, pub_topics
 
 
-def getTopicInfo(topic_name):
-    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
+def getTopicInfo(path, topic_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic info -v ' + topic_name
 
@@ -205,8 +203,8 @@ def getTopicInfo(topic_name):
     return topic_type, pub_nodes, sub_nodes
 
 
-def getTopicType(topic_name):
-    cmd = 'source /opt/ros/' + ROS_DISTRO + '/setup.bash'
+def getTopicType(path, topic_name):
+    cmd = 'source ' + path
     cmd += ' && '
     cmd += 'ros2 topic type ' + topic_name
 
